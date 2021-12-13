@@ -95,6 +95,21 @@
 		margin: 10px 0 5px 10px;
 		font-size: 24px;
 	}
+	status {
+		display: inline-Block;
+		font-size: 22px;
+	}
+	status-icon {
+		display: inline-block;
+		border: 2px solid var(--dlw-color);
+		line-height: 22px;
+		width: 18px;
+		height: 18px;
+		border-radius: 50%;
+		background-color: yellow;
+		vertical-align: -17%;
+		margin: 0 10px;
+	}
 </style>
 
 
@@ -103,6 +118,8 @@
 	<input type="hidden" name="action" value="craft-deploy/deploy/deploy">
 	<button class="btn submit" type="submit">{{'Do it'|t('craft-deploy')}}</button>
 </form> #}
+
+<status>Status: <status-icon></status-icon><span>prüfe...</span></status>
 
 <p>hier kann die Veröffentlichung gestartet werden:</p>
 <button id="deploy" class="button">Veröffentlichen</button>
@@ -134,18 +151,20 @@
 
 
 <script>
-	const deployButton = document.getElementById("deploy");
-	const bar = document.querySelector(".bar");
-	const progress = document.querySelector(".progress");
-	const statusText = document.querySelector(".statustext");
-	const failureButton = document.getElementById("failure");
-	const restoreButton = document.getElementById("restore");
-	const optGroup = document.querySelector("#deployments optgroup");
-	const locationDep = "http://localhost:5000";
+const deployButton = document.getElementById("deploy");
+const bar = document.querySelector(".bar");
+const progress = document.querySelector(".progress");
+const statusText = document.querySelector(".statustext");
+const statusIcon = document.querySelector("status-icon");
+const statusSpan = document.querySelector("status span");
+const failureButton = document.getElementById("failure");
+const restoreButton = document.getElementById("restore");
+const optGroup = document.querySelector("#deployments optgroup");
+const locationDep = "http://localhost:5000";
 
-	let jsonId = {};
+let jsonId = {};
 
-	const startDeploy = async( url = "" ) => {
+const startDeploy = async( url = "" ) => {
 
 	progress.style.display = "block";
 	bar.style.width = "100%";
@@ -157,56 +176,58 @@
 		const response = await fetch(url, { method:"POST", body: JSON.stringify({ "action": "deploy"})})
 
 		if(response.status === 200) {
-		jsonId = await response.json();
+			jsonId = await response.json();
 
-		const getStatus = async( url = "", id = "" ) => {
-			const response = await fetch(url, { method:"POST", body: JSON.stringify({ "action": "status", "id": id })});
-			if(response.status === 200) {
-			const jsonStatus = await response.json();
-			if (jsonStatus) {
-				if (jsonStatus.status === "complete") {
-				clearInterval(ping);
-				bar.innerText = "Fertig!";
-				bar.style.backgroundColor = "#77962E";
-				bar.style.width = "100%";
-				deployButton.style.display = "block";
-				};
-				if (jsonStatus.status === "running") {
-				console.log(jsonStatus);
-				setBar(jsonStatus.progress);
-				statusText.style.display = "none";
+			const getStatus = async( url = "", id = "" ) => {
+				const response = await fetch(url, { method:"POST", body: JSON.stringify({ "action": "status", "id": id })});
+				if(response.status === 200) {
+					const jsonStatus = await response.json();
+					if (jsonStatus) {
+						if (jsonStatus.status === "complete") {
+						clearInterval(ping);
+						bar.innerText = "Fertig!";
+						bar.style.backgroundColor = "#77962E";
+						bar.style.width = "100%";
+						deployButton.style.display = "block";
+						};
+						if (jsonStatus.status === "running") {
+						console.log(jsonStatus);
+						setBar(jsonStatus.progress);
+						statusText.style.display = "none";
+						}
+						if (jsonStatus.status === "error") {
+						clearInterval(ping);
+						deployButton.style.display = "block";
+						bar.innerHTML = "FEHLER";
+						bar.style.backgroundColor = "red";
+						console.log(jsonStatus);
+						};
+						if (jsonStatus.status === "stopped") {
+						clearInterval(ping);
+						deployButton.style.display = "block";
+						bar.innerHTML = "Abgebrochen";
+						bar.style.width = "100%";
+						bar.style.backgroundColor = "grey";
+						};
+					}
 				}
-				if (jsonStatus.status === "error") {
-				clearInterval(ping);
-				deployButton.style.display = "block";
-				bar.innerHTML = "FEHLER";
-				bar.style.backgroundColor = "red";
-				console.log(jsonStatus);
-				};
-				if (jsonStatus.status === "stopped") {
-				clearInterval(ping);
-				deployButton.style.display = "block";
-				bar.innerHTML = "Abgebrochen";
-				bar.style.width = "100%";
-				bar.style.backgroundColor = "grey";
-				};
 			}
+
+			const Status = () => {
+				getStatus(locationDep, jsonId.id);
 			}
-		}
-		const Status = () => {
-			getStatus(locationDep, jsonId.id);
-		}
-		const ping = setInterval(Status, 1000);
+
+			const ping = setInterval(Status, 1000);
 		}
 	} catch (error) {
 		console.log(error);
 		bar.innerHTML = "FEHLER";
 		bar.style.backgroundColor = "red";
 	}
-	}
 
+}
 
-	const setBar = percent => {
+const setBar = percent => {
 	if (percent > 0) {
 		progress.style.display = "block";
 	}
@@ -215,33 +236,33 @@
 	if (percent > 99) {
 		progress.style.display = "none";
 	}
-	}
+}
 
-	deployButton.addEventListener("click", () => {
+deployButton.addEventListener("click", () => {
 	startDeploy(locationDep);
-	})
+})
 
-	const startFailure = async( url = "", id ) => {
+const startFailure = async( url = "", id ) => {
 	console.log(id);
 	const response = await fetch(url, { method:"POST", body: JSON.stringify({ "action": "cancel", "id": id})});
 	const json = await response.json();
-	}
+}
 
-	failureButton.addEventListener("click", () => {
+failureButton.addEventListener("click", () => {
 	if (jsonId.id) {
 		// console.log(jsonId);
 		startFailure(locationDep, jsonId.id);
 	}
-	});
+});
 
 
-	restoreButton.addEventListener("click", async () => {
+restoreButton.addEventListener("click", async () => {
 	const release = optGroup.parentElement.value;
 	await doAction("restore", { release });
-	
-	})
 
-	const doAction = async ( action, data = {} ) => {
+})
+
+const doAction = async ( action, data = {} ) => {
 	const response = await fetch(locationDep, { method:"POST", body: JSON.stringify({ action, ...data })});
 	if(response.status === 200) {
 		const data = await response.json();
@@ -249,24 +270,31 @@
 		return data;
 		}
 	}
-	}
+}
 
-	const askDeployments = async() => {
-	const data = await doAction("releaseList");
+const askDeployments = async() => {
 	optGroup.innerHTML = "";
-	
-	for ( let i = 0; i <    data.releases.length; i++) {
-		const option = document.createElement("OPTION");
-		const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-		option.value = data.releases[i];
-		option.innerHTML = new Date(data.releases[i]).toLocaleDateString('de-DE', dateOptions);
-		optGroup.append(option);
+	try {
+		const data = await doAction("releaseList");
+		for ( let i = 0; i < data.releases.length; i++) {
+			const option = document.createElement("OPTION");
+			const dateOptions = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+			option.value = data.releases[i];
+			option.innerHTML = new Date(data.releases[i]).toLocaleDateString('de-DE', dateOptions);
+			optGroup.append(option);
+		}
+		statusIcon.style.backgroundColor = "green";
+		statusSpan.innerHTML = "verbunden";
+	} catch (error) {
+		console.error(error);
+		statusIcon.style.backgroundColor = "red";
+		statusSpan.innerHTML = "keine Verbindung (neuer Versuch mit 'Neu laden')";
 	}
-	}
+}
 
-	setTimeout(() => {
+setTimeout(() => {
 	askDeployments();
-	}, 0);
+}, 0);
 
 
 	// 
