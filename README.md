@@ -14,7 +14,7 @@ To install the plugin, follow these instructions.
 
 1. Add this path to your composer "repositories" in your Craft project:
 
-        ´´´ "repositories": [
+        ``` "repositories": [
     {
       "type": "path",
       "url": "../craft-release/",
@@ -23,7 +23,7 @@ To install the plugin, follow these instructions.
       }
     }
   ],
-  ´´´
+  ```
 
 
 2. Then tell Composer to load the plugin:
