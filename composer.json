@@ -1,0 +1,41 @@
+{
+    "name": "dilewe/release",
+    "description": "craft plugin for releases and statistics",
+    "type": "craft-plugin",
+    "version": "1.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "release"
+    ],
+    "support": {
+        "docs": "https://github.com/https://github.com/Digitale-Lernwelten/release/blob/master/README.md",
+        "issues": "https://github.com/https://github.com/Digitale-Lernwelten/release/issues"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Digitale-Lernwelten",
+            "homepage": "https://dilewe.de"
+        }
+    ],
+    "require": {
+        "craftcms/cms": "^3.0.0"
+    },
+    "autoload": {
+        "psr-4": {
+          "dilewe\\release\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "release",
+        "handle": "release",
+        "developer": "Digitale-Lernwelten",
+        "developerUrl": "https://dilewe.de",
+        "documentationUrl": "https://github.com/https://github.com/Digitale-Lernwelten/release/blob/master/README.md",
+        "changelogUrl": "https://raw.githubusercontent.com/https://github.com/Digitale-Lernwelten/release/master/CHANGELOG.md",
+        "class": "dilewe\\release\\Release"
+    }
+}
