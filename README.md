@@ -2,7 +2,7 @@
 
 craft plugin for releases and statistics
 
-![Screenshot](resources/img/plugin-logo.png)
+![Screenshot](resources/img/icon.png)
 
 ## Requirements
 
@@ -12,9 +12,19 @@ This plugin requires Craft CMS 3.0.0-beta.23 or later.
 
 To install the plugin, follow these instructions.
 
-1. Open your terminal and go to your Craft project:
+1. Add this path to your composer "repositories" in your Craft project:
 
-        cd /path/to/project
+        ´´´ "repositories": [
+    {
+      "type": "path",
+      "url": "../craft-release/",
+      "options": {
+        "symlink": true
+      }
+    }
+  ],
+  ´´´
+
 
 2. Then tell Composer to load the plugin:
 
