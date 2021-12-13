@@ -14,7 +14,8 @@ To install the plugin, follow these instructions.
 
 1. Add this path to your composer "repositories" in your Craft project:
 
-``` "repositories": [
+```
+"repositories": [
     {
       "type": "path",
       "url": "../craft-release/",
@@ -25,28 +26,26 @@ To install the plugin, follow these instructions.
   ],
 ```
 
-2. Then tell Composer to load the plugin:
+2. Then tell Composer to require the plugin:
 
-        composer require https://github.com/Digitale-Lernwelten/release
+```
+"require": {
+    "craftcms/aws-s3": "1.3.0",
+    "dilewe/release": "1.0.0",
+    "craftcms/redactor": "2.8.8",
+}
+```
 
-3. In the Control Panel, go to Settings → Plugins and click the “Install” button for release.
+3. then update with composer
+```
+composer update
+```
 
-## release Overview
+4. In the Control Panel, go to Settings → Plugins and click the “Install” button for release.
 
--Insert text here-
 
 ## Configuring release
 
--Insert text here-
-
-## Using release
-
--Insert text here-
-
-## release Roadmap
-
-Some things to do, and ideas for potential features:
-
-* Release it
+You need to configure the index template with the ip of the server
 
 Brought to you by [Digitale-Lernwelten](https://dilewe.de)
