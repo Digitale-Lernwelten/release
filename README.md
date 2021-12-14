@@ -46,6 +46,6 @@ composer update
 
 ## Configuring release
 
-You need to configure the index template with the ip of the server
+You need to configure the Adress of the server in config/general.php, variable "lasubAdministration"
 
 Brought to you by [Digitale-Lernwelten](https://dilewe.de)
